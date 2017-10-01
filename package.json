@@ -1,0 +1,33 @@
+{
+  "name": "tweetest",
+  "version": "0.1.0",
+  "description": "Twitter Timeline Reader",
+  "main": "app.js",
+  "files": [
+    "public/javascript",
+    "public/index.html",
+    "public/stylesheets/style.styl",
+    "app.js"
+  ],
+  "scripts": {
+    "start": "app.js"
+  },
+  "dependencies": {
+    "cli": "^1.0.1",
+    "express": "^4.16.0",
+    "body-parser": "^1.18.2",
+    "moment": "^2.18.1",
+    "nib": "^1.1.0",
+    "stylus": "^0.53.0",
+    "oauth": "^0.9.15",
+    "twitter": "^1.7.1"
+  },
+  "bundleDependencies": [],
+  "devDependencies": {
+    "nodemon": "^1.12.1"
+  },
+  "keywords": [
+    "tweet",
+    "twitter"
+  ]
+}
