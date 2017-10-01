@@ -42,7 +42,7 @@ var TweetCollectionDef = Backbone.Collection.extend({
 
 // The individual tweet's view definition
 var TweetItemViewDef = Backbone.View.extend({
-    tagName: 'div',
+    tagName: 'table',
     className: 'tweet-item',
     template: _.template($('#tweet-item-tmpl').html()),
 
@@ -52,22 +52,31 @@ var TweetItemViewDef = Backbone.View.extend({
 
     render: function() {
         var modelAttrs = this.model.attributes;
-        var text = '<div>' + modelAttrs.text + '</div>';
+        var media;
         if (modelAttrs.entities !== undefined &&
             modelAttrs.entities.media !== undefined)
         {
             modelAttrs.entities.media.forEach(function(url)
             {
-                text += '<img class="tweet-img", src="' + url.media_url + '"></img>';
+                media += '<tr><td colspan="4"><img class="tweet-img", src="' + url.media_url + '"></img></td></tr>';
             });
         }
-
+        var text = modelAttrs.text;
+        // strip off the trailing url
+        var idx = text.indexOf('https://t.co/');
+        if (idx !== -1)
+        {
+            text = text.slice(0, idx);
+        }
+        // Reformat the date
+        var created_at = new Date(modelAttrs.created_at);
         var renderModel = { user_name: modelAttrs.user.name
                           , user_profile_image_url: modelAttrs.user.profile_image_url
                           , user_screen_name: modelAttrs.user.screen_name
-                          , created_at: modelAttrs.created_at
+                          , created_at: created_at.toLocaleString()
                           , retweet_count: modelAttrs.retweet_count 
                           , text: text
+                          , media: media
                           };
 
         var html = this.template(renderModel);
@@ -79,7 +88,12 @@ var TweetItemViewDef = Backbone.View.extend({
 
 // View class for rendering the tweets
 var TweetListView = Backbone.View.extend({
-    el: '#tweet-list',
+    el: '#tweet-div',
+    events:
+    {
+        "click #tweet-filter-button": "applyFilter",
+        "click #tweet-filter-reset": "render"
+    },
 
     initialize: function()
     {
@@ -87,25 +101,28 @@ var TweetListView = Backbone.View.extend({
         this.listenTo(this.collection, 'sync', this.render);
     },
 
-    events:
+    set_title: function(count)
     {
-        "click #tweet-filter-button": "applyFilter",
-        "click #tweet-filter-reset": "render"
+        $('#main-title').html('Last ' + count + ' Tweets');
     },
 
     render: function()
     {
-        // var $list = this.$('ul.tweet-list').empty();
-        var $list = this.$el.empty();
+        console.log('default render');
+        var $list = this.$('#tweet-list').empty();
+        // var $list = this.$el.empty();
         this.collection.each(function(model) {
             var item = new TweetItemViewDef({model: model});
             $list.append(item.render().$el);
         }, this);
+
+        this.set_title(this.collection.length);
         return this;
     },
 
     applyFilter: function()
     {
+        console.log("whats up");
         var filter = $('#tweet-filter').val();
         if (filter.length === 0)
         {
@@ -114,16 +131,20 @@ var TweetListView = Backbone.View.extend({
         }
 
         console.log('filter value=%s', filter, typeof filter);
-        var $list = this.$el.empty();
-        // var $list = this.$('ul.tweet-list').empty();
+        var $list = this.$('#tweet-list').empty();
+        // var $list = this.$el.empty();
+
+        var count = 0;
         this.collection.each(function(model) {
             var modelAttrs = model.attributes;
             if (modelAttrs.text !== undefined && modelAttrs.text.indexOf(filter) !== -1)
             {
                 var item = new TweetItemViewDef({model: model});
                 $list.append(item.render().$el);
+                count++;
             }
         }, this);
+        this.set_title(count);
         return this;
     }
 });
@@ -131,3 +152,8 @@ var TweetListView = Backbone.View.extend({
 var tweetCollection = new TweetCollectionDef();
 var appView = new TweetListView({collection: tweetCollection});
 tweetCollection.fetch();
+// Continue to update the list every minute 
+setInterval(function()
+{
+    tweetCollection.fetch();
+}, 60100);
