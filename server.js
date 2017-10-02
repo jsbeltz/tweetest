@@ -9,7 +9,7 @@
 const cli = require('cli');
 cli.setApp("tweetest", "0.1");
                                 
-let options = cli.parse({ webPort: [ 'p', 'Default web port', 'int', 8080 ]
+let options = cli.parse({ webPort: [ 'p', 'Default web port', 'int', (process.env.PORT || 8080) ]
                         , screen_name: [ 'sn', 'Twitter screen name to use', 'string', process.env.TWITTER_SCREEN_NAME]
                         // , expires: [ 'e', 'Timer for the options message (in millsecs - default: 120 sec)', 'int', 120000]
                         });
