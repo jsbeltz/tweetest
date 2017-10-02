@@ -20,6 +20,7 @@ const express = require('express');
 const body = require('body-parser');
 const app = express();
 
+
 // If development use pretty html...
 if (app.get('env') === 'development') {
   app.locals.pretty = true;
@@ -58,16 +59,27 @@ let g_oauth2 = new OAuth.OAuth2(process.env.TWITTER_CONSUMER_KEY,
                                 'oauth2/token',
                                 null);
 
-let g_twitterClient;
-g_oauth2.getOAuthAccessToken('', {'grant_type':'client_credentials'}, function (e, access_token, refresh_token, results)
+// Create a bogus client which only generates an error, primary for unit testing
+let g_twitterClient = { get: function(url, params, callback) {
+                                if (callback !== undefined)
+                                {
+                                    callback(new Error("No connection to twitter"));
+                                }
+                            }
+                      };
+
+if (process.env.TWITTER_CONSUMER_KEY !== undefined && process.env.TWITTER_CONSUMER_SECRET !== undefined)
 {
-    console.log('e=%j, bearer=%j refresh_token=%j results=%j', e, access_token, refresh_token, results);
-    g_twitterClient = new Twitter({
-      consumer_key: process.env.TWITTER_CONSUMER_KEY,
-      consumer_secret: process.env.TWITTER_CONSUMER_SECRET,
-      bearer_token: access_token
+    g_oauth2.getOAuthAccessToken('', {'grant_type':'client_credentials'}, function (e, access_token, refresh_token, results)
+    {
+        console.log('e=%j, bearer=%j refresh_token=%j results=%j', e, access_token, refresh_token, results);
+        g_twitterClient = new Twitter({
+          consumer_key: process.env.TWITTER_CONSUMER_KEY,
+          consumer_secret: process.env.TWITTER_CONSUMER_SECRET,
+          bearer_token: access_token
+        });
     });
-});
+}
 
 
 // -----------------------------------------------------
@@ -103,8 +115,8 @@ app.get('/v1/tweets', function (req, res) {
         g_nextAllowedGet = new moment().add(1,'minute');
         console.log("refreshing list, next=%s", g_nextAllowedGet);
         var params = { screen_name: options.screen_name
-                     , count: 11
-                     , exclude_replies: true
+                     , count: 10
+                     , exclude_replies: false
                      };
         g_twitterClient.get('statuses/user_timeline', params, function(error, tweets/*, response*/)
         {
@@ -135,4 +147,12 @@ app.get('/v1/tweets', function (req, res) {
 
 // Reads the configuration to determine the starting port.
 app.listen(options.webPort);
+
 console.log('started %s\nListening on port %d', g_startTime, options.webPort);
+
+//-----------------------------------------------------
+// For Unit Testing
+//-----------------------------------------------------
+module.exports.baseUrl = "http://localhost:" + options.webPort.toString();
+// For Spying
+module.exports.twitterClient = g_twitterClient;

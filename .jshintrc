@@ -6,6 +6,6 @@
   "unused": true,
   "laxcomma": true,
   "node": true,
-  "predef": ["suite", "suiteSetup", "suiteTeardown", "test", "setup", "teardown"],
+  "predef": ["describe", "it", "expect","beforeAll", "afterAll"],
   "maxerr": 65536
 }
