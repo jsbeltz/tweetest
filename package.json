@@ -10,16 +10,18 @@
     "app.js"
   ],
   "scripts": {
-    "start": "server.js"
+    "start": "server.js",
+    "test": "jasmine"
   },
   "dependencies": {
+    "body-parser": "^1.18.2",
     "cli": "^1.0.1",
     "express": "^4.16.0",
-    "body-parser": "^1.18.2",
+    "jasmine": "^2.8.0",
     "moment": "^2.18.1",
     "nib": "^1.1.0",
-    "stylus": "^0.53.0",
     "oauth": "^0.9.15",
+    "stylus": "^0.53.0",
     "twitter": "^1.7.1"
   },
   "bundleDependencies": [],

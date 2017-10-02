@@ -1,0 +1,11 @@
+{
+  "curly": true,
+  "esversion": 6,
+  "latedef": true,
+  "undef": true,
+  "unused": true,
+  "laxcomma": true,
+  "node": true,
+  "predef": ["suite", "suiteSetup", "suiteTeardown", "test", "setup", "teardown"],
+  "maxerr": 65536
+}

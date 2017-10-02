@@ -1,3 +1,8 @@
 node_modules
 package-lock.json
-nodemon.sh
+./nodemon.sh
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
