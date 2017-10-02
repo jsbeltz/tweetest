@@ -9,9 +9,8 @@
 const cli = require('cli');
 cli.setApp("tweetest", "0.1");
                                 
-let options = cli.parse({ webPort: [ 'p', 'Default web port', 'int', (process.env.SERVICE_PORT || 8080) ]
+let options = cli.parse({ webPort: [ 'p', 'Default web port', 'int', (process.env.PORT || 8080) ]
                         , screen_name: [ 'sn', 'Twitter screen name to use', 'string', process.env.TWITTER_SCREEN_NAME]
-                        // , expires: [ 'e', 'Timer for the options message (in millsecs - default: 120 sec)', 'int', 120000]
                         });
 
 // -----------------------------------------------------
@@ -104,7 +103,7 @@ app.get('/v1/tweets', function (req, res) {
         g_nextAllowedGet = new moment().add(1,'minute');
         console.log("refreshing list, next=%s", g_nextAllowedGet);
         var params = { screen_name: options.screen_name
-                     , count: 10
+                     , count: 11
                      , exclude_replies: true
                      };
         g_twitterClient.get('statuses/user_timeline', params, function(error, tweets/*, response*/)
