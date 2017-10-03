@@ -3,7 +3,7 @@
 // -----------------------------------------------------
 "use strict";
 const request = require("request");
-const testServer = require("../server.js");
+const testServer = require("../../server.js");
 const _ = require("lodash");
 
 var g_tweetDate = new Date();
