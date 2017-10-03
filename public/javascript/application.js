@@ -26,7 +26,7 @@ var TweetModelDef = Backbone.Model.extend({
         // "retweeted":false,
         // "possibly_sensitive":false,
         // "lang":"en"
-        "retweet_count":10
+        "retweet_count":0
     }
 });
 

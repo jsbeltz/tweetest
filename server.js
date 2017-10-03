@@ -103,17 +103,18 @@ app.get('/v1/health_check', function (req, res)
 
 
 let g_nextAllowedGet;
-let g_tweets;
+let g_lastPayload;
 
 //-----------------------------------------------------
 // GET: /v1/tweets
 app.get('/v1/tweets', function (req, res) {
     // The tweet api is limited to 15 call in a 15 min time window (1 every minute) 
     // https://developer.twitter.com/en/docs/basics/rate-limiting
-    if (g_nextAllowedGet === undefined || g_nextAllowedGet.isSameOrBefore(/*currentTime*/))
+    if (g_lastPayload === undefined || g_nextAllowedGet === undefined || g_nextAllowedGet.isSameOrBefore(/*currentTime*/))
     {
-        g_nextAllowedGet = new moment().add(1,'minute');
-        console.log("refreshing list, next=%s", g_nextAllowedGet);
+        let now = new moment();
+        g_nextAllowedGet = now.add(1,'minute');
+        console.log("refreshing list %s", now);
         var params = { screen_name: options.screen_name
                      , count: 10
                      , exclude_replies: false
@@ -127,21 +128,18 @@ app.get('/v1/tweets', function (req, res) {
                 res.status(500).send(error);
                 return;
             }
-            g_tweets = tweets;
-
+            g_lastPayload = { total: tweets.length
+                            , updated: now
+                            , entities: tweets
+                            };
             // Should the tweets be omitted
-            res.status(200).send({ total: g_tweets.length
-                                 , entities: g_tweets
-                                 });
+            res.status(200).send(g_lastPayload);
         });
         return;
     }
 
     console.log("sending old data, next=%s", g_nextAllowedGet.fromNow());
-    // Should the tweets be omitted
-    res.status(200).send({ total: g_tweets.length
-                         , entities: g_tweets
-                         });
+    res.status(200).send(g_lastPayload);
 });
 
 
