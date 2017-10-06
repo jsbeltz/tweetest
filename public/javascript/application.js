@@ -54,7 +54,7 @@ var TweetItemViewDef = Backbone.View.extend({
     render: function() {
         var modelAttrs = this.model.attributes;
         var mediaTemplate = this.mediaTemplate;
-        var media;
+        var media = "";
         if (modelAttrs.entities !== undefined &&
             modelAttrs.entities.media !== undefined)
         {
@@ -108,45 +108,40 @@ var TweetListView = Backbone.View.extend({
         $('#main-title').html('Last ' + count + ' Tweets');
     },
 
-    render: function()
+    render_internal: function(list, filter)
     {
-        console.log('default render');
-        var $list = this.$('#tweet-list').empty();
-        // var $list = this.$el.empty();
+        var count = 0;
         this.collection.each(function(model) {
+            // If we have a filter 
+            if (filter !== undefined && filter.length !== 0)
+            {
+                console.log('filter value=%s', filter, typeof filter);
+                //  See if the text doesn't fit
+                var modelAttrs = model.attributes;
+                if (modelAttrs.text !== undefined && modelAttrs.text.indexOf(filter) === -1)
+                {
+                    return;
+                }
+            }
             var item = new TweetItemViewDef({model: model});
-            $list.append(item.render().$el);
+            count++;
+            list.append(item.render().$el);
         }, this);
 
-        this.set_title(this.collection.length);
+        this.set_title(count);
         return this;
+    },
+
+    render: function()
+    {
+        var $list = this.$('#tweet-list').empty();
+        return this.render_internal($list, undefined);
     },
 
     applyFilter: function()
     {
-        console.log("whats up");
-        var filter = $('#tweet-filter').val();
-        if (filter.length === 0)
-        {
-            console.log('no filter, render normally');
-            return this.render;
-        }
-
-        console.log('filter value=%s', filter, typeof filter);
         var $list = this.$('#tweet-list').empty();
-        // var $list = this.$el.empty();
-
-        var count = 0;
-        this.collection.each(function(model) {
-            var modelAttrs = model.attributes;
-            if (modelAttrs.text !== undefined && modelAttrs.text.indexOf(filter) !== -1)
-            {
-                var item = new TweetItemViewDef({model: model});
-                $list.append(item.render().$el);
-                count++;
-            }
-        }, this);
-        this.set_title(count);
-        return this;
+        var filter = $('#tweet-filter').val();
+        return this.render_internal($list, filter);
     }
 });

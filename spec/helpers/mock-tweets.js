@@ -3,7 +3,6 @@
 // -----------------------------------------------------
 
 var g_tweetDate = new Date();
-exports.tweetTestDate = g_tweetDate;
 
 function new_fake_tweet( idx )
 {
@@ -29,7 +28,6 @@ function new_fake_tweet( idx )
     };
 }
 
-exports.new_fake_tweet = new_fake_tweet;
 
 function fake_tweet_array(count)
 {
@@ -41,4 +39,10 @@ function fake_tweet_array(count)
     return mockTweets;
 }
 
-exports.fake_tweet_array = fake_tweet_array;
+// Prepare for node use
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined')
+{
+    module.exports.new_fake_tweet = new_fake_tweet;
+    module.exports.fake_tweet_array = fake_tweet_array;
+    module.exports.tweetTestDate = g_tweetDate;
+}

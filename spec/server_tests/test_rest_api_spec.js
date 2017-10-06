@@ -4,32 +4,8 @@
 "use strict";
 const request = require("request");
 const testServer = require("../../server.js");
+const mockTweets = require("../helpers/mock-tweets.js");
 const _ = require("lodash");
-
-var g_tweetDate = new Date();
-function new_fake_tweet( idx )
-{
-    var idxStr = idx.toString();
-    return {
-        "created_at": g_tweetDate,
-        "id": idx,
-        "id_str": idxStr, 
-        "text": "text " + idxStr,
-        "entities": {
-            "media": [
-                {
-                    "media_url": "http://localhost/" + idxStr,
-                }
-            ]
-        },
-        "user": {
-            "name": "name" + idxStr,
-            "screen_name": "name" + idxStr,
-            "profile_background_image_url": "http://localhost/" + idxStr + ".png"
-        },
-        "retweet_count":0
-    };
-}
 
 describe("Test Rest API", function()
 {
@@ -49,18 +25,14 @@ describe("Test Rest API", function()
     });
     describe("GET /v1/tweets", function()
     {
-        let mockTweets;
+        var testTweets;
         beforeEach(function()
         {
-            mockTweets = [];
-            for(let idx = 1; idx <= 5; ++idx)
-            {
-                mockTweets.push(new_fake_tweet(idx));
-            }
-
+            testTweets = mockTweets.fake_tweet_array(5);
             spyOn(testServer.twitterClient, "get").and.callFake(function(url, params, callback) {
-                callback(null, mockTweets);
+                callback(null, testTweets);
             });
+
         });
         it("returns status code 200 and payload", function(done)
         {
@@ -90,8 +62,8 @@ describe("Test Rest API", function()
             setTimeout(function()
             {
                 // Add some new mock tweets
-                mockTweets.push(new_fake_tweet(7));
-                mockTweets.push(new_fake_tweet(8));
+                testTweets.push(mockTweets.new_fake_tweet(7));
+                testTweets.push(mockTweets.new_fake_tweet(8));
                 request.get(testServer.baseUrl+"/v1/tweets", function(error, response, body)
                 {
                     expect(response.statusCode).toBe(200);
