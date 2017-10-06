@@ -32,8 +32,21 @@
             </tr>
             <%= media %>
         </script>
+        <script type="text/template" id="tweet-media-tmpl">
+            <tr><td colspan="4"><img class="tweet-img", src="<%= + media_url %>"></img></td></tr>
+        </script>
 
         <!-- the main application javascript -->
         <script type="text/javascript" src="javascript/application.js"></script>
+        <script type="text/javascript">
+            var tweetCollection = new TweetCollectionDef();
+            var appView = new TweetListView({collection: tweetCollection});
+            tweetCollection.fetch();
+            // Continue to update the list every minute 
+            setInterval(function()
+            {
+                tweetCollection.fetch();
+            }, 60100);
+        </script>
     </body>
 </html>

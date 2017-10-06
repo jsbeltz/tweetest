@@ -45,6 +45,7 @@ var TweetItemViewDef = Backbone.View.extend({
     tagName: 'table',
     className: 'tweet-item',
     template: _.template($('#tweet-item-tmpl').html()),
+    mediaTemplate: _.template($('#tweet-media-tmpl').html()),
 
     initialize: function() {
         this.listenTo(this.model, 'destroy', this.remove)
@@ -58,7 +59,7 @@ var TweetItemViewDef = Backbone.View.extend({
         {
             modelAttrs.entities.media.forEach(function(url)
             {
-                media += '<tr><td colspan="4"><img class="tweet-img", src="' + url.media_url + '"></img></td></tr>';
+                media += this.mediaTemplate(url);
             });
         }
         var text = modelAttrs.text;
@@ -148,12 +149,3 @@ var TweetListView = Backbone.View.extend({
         return this;
     }
 });
-
-var tweetCollection = new TweetCollectionDef();
-var appView = new TweetListView({collection: tweetCollection});
-tweetCollection.fetch();
-// Continue to update the list every minute 
-setInterval(function()
-{
-    tweetCollection.fetch();
-}, 60100);

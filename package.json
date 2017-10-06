@@ -7,10 +7,10 @@
     "public/javascript",
     "public/index.html",
     "public/stylesheets/style.styl",
-    "app.js"
+    "server.js"
   ],
   "scripts": {
-    "start": "server.js",
+    "start": "node server.js",
     "test": "jasmine"
   },
   "dependencies": {
