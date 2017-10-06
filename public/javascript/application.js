@@ -53,13 +53,14 @@ var TweetItemViewDef = Backbone.View.extend({
 
     render: function() {
         var modelAttrs = this.model.attributes;
+        var mediaTemplate = this.mediaTemplate;
         var media;
         if (modelAttrs.entities !== undefined &&
             modelAttrs.entities.media !== undefined)
         {
             modelAttrs.entities.media.forEach(function(url)
             {
-                media += this.mediaTemplate(url);
+                media += mediaTemplate(url);
             });
         }
         var text = modelAttrs.text;
